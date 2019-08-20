@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Polygon with Hole</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <button type="button" name="button" onclick={eraseEndpoints()}>Erase Endpoints</button>
+    <div id="map"></div>
+    <script>
+      this.map = null
+      this.endpoints = []
+
+      function eraseEndpoints (){
+        this.endpoints = []
+        // google.maps.setMap(null)
+      }
+
+      function setMarker(latLng) {
+        const self = this
+        const position = {
+          lat: latLng.lat(),
+          lng: latLng.lng(),
+        }
+        const marker = new google.maps.Marker({
+          position,
+          map: self.map,
+        })
+      }
+
+      function circlePath(center, radius, points) {
+        let arr=[]
+        const p = 360/points
+        let d = 0
+        for(let i = 0; i < points; i++){
+          arr.push(google.maps.geometry.spherical.computeOffset(center, radius, d))
+          d += p
+        }
+        return arr
+      }
+
+      function initMap() {
+        const self = this
+        self.map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 11,
+          center: {lat: 40.7, lng: -112},
+        });
+
+        google.maps.event.addListener(map, 'click', function(e){
+          console.log('lat:', e.latLng.lat(), ', lng:', e.latLng.lng());
+          if (self.endpoints.length < 2) {
+            self.endpoints.push(e.latLng)
+          }
+          else if(self.endpoints.length === 2){
+            self.endpoints.forEach( ep => {
+              setMarker(ep)
+            })
+
+            console.log(endpoints[0]);
+
+            const distance = google.maps.geometry.spherical.computeDistanceBetween(endpoints[0], endpoints[1])
+            const heading = google.maps.geometry.spherical.computeHeading(endpoints[0], endpoints[1])
+
+            const l = 25
+
+            const percent = 2 * Math.sin((heading * Math.PI)/180)
+            const arr = new Array(l).fill(undefined)
+            const getCalculatedHeading = i => (heading - percent - (i * percent))
+            const arcArr = arr.map( (n, i) => google.maps.geometry.spherical.computeOffset(endpoints[0], distance, getCalculatedHeading(i))
+            )
+
+            let path = arr.map( (n, i) => google.maps.geometry.spherical.interpolate(endpoints[0], arcArr[(l - i) - 1], i/l)
+            )
+            path = [...path, endpoints[1]]
+
+            console.log('distance between:', distance, '\nheading:', heading,
+            '\ndistance:', distance,
+            '\npath:', path, path.length,
+          );
+            const geodesicPoly = new google.maps.Polyline({
+              // strokeColor: '#CC0099',
+              // strokeOpacity: 1.0,
+              // strokeWeight: 3,
+              geodesic: true,
+              map: self.map,
+            })
+            geodesicPoly.setPath(path)
+          }
+        })
+      }
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAkUF0DFrn0kpLi73cWeUnQJR_QELCJh4&callback=initMap&libraries=geometry,drawing">
+    </script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>AVL Feed</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <button type="button" name="button" onclick={clearMap()}>Clear Map</button>
+    <button type="button" name="button" onclick={drawNormalLines()}>Draw Normal Paths</button>
+    <button type="button" name="button" onclick={clearNormalLines()}>Clear Normal Paths</button>
+    <button type="button" name="button" onclick={drawOffsetLines()}>Draw Offset Paths</button>
+    <button type="button" name="button" onclick={clearOffsetLines()}>Clear Offset Paths</button> -->
+    <!-- <div style="padding: 10px">
+      <div style="height: 50px;">
+        Here are some words and things
+      </div>
+      <hr style="border: 1px solid gray;">
+    </div> -->
+    <div id="map"></div>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAkUF0DFrn0kpLi73cWeUnQJR_QELCJh4&libraries=geometry,drawing">
+    </script>
+    <script type="text/javascript" src="main.js"></script>
+  </body>
+</html>

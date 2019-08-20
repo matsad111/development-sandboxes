@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Polygon with Hole</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <button type="button" name="button" id="exclude" onclick={select(id)}>Exclusion</button>
+    <button type="button" name="button" id="include" onclick={select(id)}>Inclusion</button>
+    <button type="button" name="button" id="include" onclick={draw()}>Redraw Map</button>
+    <button type="button" name="button" onclick={click()}>Erase Triangle</button>
+    <div id="map"></div>
+    <script>
+
+      function click () {
+        console.log('trying to trigger a fucking click');
+        button.click()
+      }
+
+      let selection = []
+
+      function select (id) {
+        const index = selection.indexOf(id)
+        if (index !== -1){
+          selection.splice(index, 1)
+        }
+        else {
+          selection.push(id)
+        }
+      }
+
+      function circlePath (center, radius, points){
+        var a=[],p=360/points,d=0;
+        for(var i=0;i<points;++i){
+            a.push(google.maps.geometry.spherical.computeOffset(center,radius,d));
+            d+=p;
+        }
+        return a;
+      }
+      function reverseCirclePath (center, radius, points){
+        var a=[],p=360/points,d=0;
+        for(var i=0;i<points;++i){
+            a.push(google.maps.geometry.spherical.computeOffset(center,radius,d));
+            d-=p;
+        }
+        return a;
+      }
+
+      const exclRad = 300000
+      const inclRad = 100000
+
+      function draw() {
+        console.log('redraw triggered');
+      }
+
+      // function getOuterCoords (map) {
+      //   let outerCoords
+      //   google.maps.event.addListener(map, 'bounds_changed', function(){
+      //     bounds = map.getBounds()
+      //     console.log('in getMapBounds:', bounds);
+      //     var bounds = map.getBounds();
+      //     // console.log('outer bounds:', getMapBounds(map));
+      //     var ne = bounds.getNorthEast()
+      //     var sw = bounds.getSouthWest()
+      //     var north = ne.lat()
+      //     var south = sw.lat()
+      //     var east = ne.lng()
+      //     var west = sw.lng()
+      //     var nw = new google.maps.LatLng(north, west)
+      //     var se = new google.maps.LatLng(south, east)
+      //
+      //     outerCoords = [ne, nw, sw, se]
+      //   })
+      //   console.log('outer path:', outerCoords);
+      //   return outerCoords
+      // }
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 5,
+          center: {lat: 24.886, lng: -70.268},
+        });
+
+        // var bounds;
+
+        google.maps.event.addListener(map, 'bounds_changed', function(bounds){
+
+          var circleCenter = new google.maps.LatLng(26.727468, -69.504232)
+
+          var innerCoords = circlePath( circleCenter, inclRad, 360);
+          var outerCoords = circlePath( circleCenter, inclRad * 4, 360);
+
+          bounds = map.getBounds();
+          var ne = bounds.getNorthEast()
+          var sw = bounds.getSouthWest()
+          var north = ne.lat()
+          var south = sw.lat()
+          var east = ne.lng()
+          var west = sw.lng()
+          var nw = new google.maps.LatLng(north, west)
+          var se = new google.maps.LatLng(south, east)
+
+
+
+          var boundaryCoords = [ne, nw, sw, se]
+          console.log('outer path:', outerCoords);
+          console.log('drawing mode', google.maps.drawing.DrawingManager);
+
+          var bermudaTriangle = new google.maps.Polygon({
+            map: map,
+            paths: [boundaryCoords, outerCoords, innerCoords],
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#000',
+            fillOpacity: 0.35
+          });
+          // bermudaTriangle.setMap(map);
+        })
+
+      }
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAkUF0DFrn0kpLi73cWeUnQJR_QELCJh4&callback=initMap&libraries=geometry,drawing">
+    </script>
+  </body>
+</html>

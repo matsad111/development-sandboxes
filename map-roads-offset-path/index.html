@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Paths offset at zoom</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <button type="button" name="button" onclick={clearMap()}>Clear Map</button>
+    <button type="button" name="button" onclick={drawNormalLines()}>Draw Normal Paths</button>
+    <button type="button" name="button" onclick={clearNormalLines()}>Clear Normal Paths</button>
+    <button type="button" name="button" onclick={drawOffsetLines()}>Draw Offset Paths</button>
+    <button type="button" name="button" onclick={clearOffsetLines()}>Clear Offset Paths</button>
+    <div id="map"></div>
+    <script>
+      this.map = null
+      this.normalLines = []
+      this.offsetLines = []
+
+      const northBound = [
+        {
+          lat: 40.43569,
+          lng: -111.89488000000001
+        },
+        {
+          lat: 40.43766,
+          lng: -111.89685000000001
+        },
+        {
+          lat: 40.43876,
+          lng: -111.89796000000001
+        },
+        {
+          lat: 40.439400000000006,
+          lng: -111.89867000000001
+        },
+        {
+          lat: 40.44023000000001,
+          lng: -111.89971000000001
+        },
+        {
+          lat: 40.44155000000001,
+          lng: -111.90159000000001
+        },
+        {
+          lat: 40.44339,
+          lng: -111.9042
+        },
+        {
+          lat: 40.4476,
+          lng: -111.91021
+        },
+        {
+          lat: 40.44811,
+          lng: -111.91083
+        },
+        {
+          lat: 40.4485,
+          lng: -111.91125000000001
+        },
+        {
+          lat: 40.44881,
+          lng: -111.91155
+        },
+        {
+          lat: 40.449250000000006,
+          lng: -111.91191
+        },
+        {
+          lat: 40.449760000000005,
+          lng: -111.91227
+        },
+        {
+          lat: 40.45027,
+          lng: -111.91257
+        },
+        {
+          lat: 40.45083,
+          lng: -111.91285
+        },
+        {
+          lat: 40.45158,
+          lng: -111.91311
+        },
+        {
+          lat: 40.45273,
+          lng: -111.91336000000001
+        },
+        {
+          lat: 40.456790000000005,
+          lng: -111.9141
+        },
+        {
+          lat: 40.457730000000005,
+          lng: -111.91423
+        },
+        {
+          lat: 40.458220000000004,
+          lng: -111.91427000000002
+        },
+        {
+          lat: 40.45873,
+          lng: -111.91427000000002
+        },
+        {
+          lat: 40.459480000000006,
+          lng: -111.91427000000002
+        },
+        {
+          lat: 40.460440000000006,
+          lng: -111.91418000000002
+        },
+        {
+          lat: 40.46117,
+          lng: -111.91407000000001
+        },
+        {
+          lat: 40.46175,
+          lng: -111.91394000000001
+        },
+        {
+          lat: 40.46238,
+          lng: -111.91377000000001
+        },
+        {
+          lat: 40.46312,
+          lng: -111.91352
+        },
+        {
+          lat: 40.463840000000005,
+          lng: -111.91323000000001
+        },
+        {
+          lat: 40.464310000000005,
+          lng: -111.91301000000001
+        },
+        {
+          lat: 40.464760000000005,
+          lng: -111.91279000000002
+        },
+        {
+          lat: 40.46538,
+          lng: -111.91243000000001
+        },
+        {
+          lat: 40.465880000000006,
+          lng: -111.91214000000001
+        },
+        {
+          lat: 40.46629,
+          lng: -111.91185000000002
+        },
+        {
+          lat: 40.46967,
+          lng: -111.90949
+        },
+        {
+          lat: 40.472590000000004,
+          lng: -111.90747
+        },
+        {
+          lat: 40.476420000000005,
+          lng: -111.90480000000001
+        },
+        {
+          lat: 40.47847,
+          lng: -111.90337000000001
+        },
+        {
+          lat: 40.479710000000004,
+          lng: -111.9025
+        },
+        {
+          lat: 40.4806,
+          lng: -111.90180000000001
+        },
+        {
+          lat: 40.48151,
+          lng: -111.90103
+        },
+        {
+          lat: 40.48221,
+          lng: -111.90041000000001
+        },
+        {
+          lat: 40.48362,
+          lng: -111.89904000000001
+        }
+      ]
+
+      const southBound = [
+        {
+          lat: 40.483790000000006,
+          lng: -111.89932
+        },
+        {
+          lat: 40.482350000000004,
+          lng: -111.90071
+        },
+        {
+          lat: 40.480790000000006,
+          lng: -111.9021
+        },
+        {
+          lat: 40.479040000000005,
+          lng: -111.90337000000001
+        },
+        {
+          lat: 40.47786000000001,
+          lng: -111.90421
+        },
+        {
+          lat: 40.47665000000001,
+          lng: -111.90507000000001
+        },
+        {
+          lat: 40.474610000000006,
+          lng: -111.90650000000001
+        },
+        {
+          lat: 40.47012,
+          lng: -111.90961000000001
+        },
+        {
+          lat: 40.46614,
+          lng: -111.9124
+        },
+        {
+          lat: 40.465720000000005,
+          lng: -111.91265000000001
+        },
+        {
+          lat: 40.464800000000004,
+          lng: -111.91319000000001
+        },
+        {
+          lat: 40.46379,
+          lng: -111.91367000000001
+        },
+        {
+          lat: 40.46266000000001,
+          lng: -111.9141
+        },
+        {
+          lat: 40.46161,
+          lng: -111.91438000000001
+        },
+        {
+          lat: 40.46101,
+          lng: -111.91449000000001
+        },
+        {
+          lat: 40.46041,
+          lng: -111.91458000000002
+        },
+        {
+          lat: 40.459720000000004,
+          lng: -111.91465000000001
+        },
+        {
+          lat: 40.45888,
+          lng: -111.91468
+        },
+        {
+          lat: 40.4579,
+          lng: -111.91463
+        },
+        {
+          lat: 40.45716,
+          lng: -111.91455
+        },
+        {
+          lat: 40.456010000000006,
+          lng: -111.91435000000001
+        },
+        {
+          lat: 40.45161,
+          lng: -111.91347
+        },
+        {
+          lat: 40.45107,
+          lng: -111.9133
+        },
+        {
+          lat: 40.450570000000006,
+          lng: -111.91310000000001
+        },
+        {
+          lat: 40.450120000000005,
+          lng: -111.91289
+        },
+        {
+          lat: 40.449380000000005,
+          lng: -111.91242000000001
+        },
+        {
+          lat: 40.448930000000004,
+          lng: -111.91207000000001
+        },
+        {
+          lat: 40.44852,
+          lng: -111.91172
+        },
+        {
+          lat: 40.44821,
+          lng: -111.91141
+        },
+        {
+          lat: 40.447700000000005,
+          lng: -111.91082000000002
+        },
+        {
+          lat: 40.44731,
+          lng: -111.91032000000001
+        },
+        {
+          lat: 40.44563,
+          lng: -111.90790000000001
+        },
+        {
+          lat: 40.443450000000006,
+          lng: -111.90480000000001
+        },
+        {
+          lat: 40.44135,
+          lng: -111.90183
+        },
+        {
+          lat: 40.44019,
+          lng: -111.90018
+        },
+        {
+          lat: 40.43952,
+          lng: -111.89930000000001
+        },
+        {
+          lat: 40.43856,
+          lng: -111.8982
+        },
+        {
+          lat: 40.43733,
+          lng: -111.89696
+        },
+        {
+          lat: 40.43556,
+          lng: -111.8952
+        }
+      ]
+
+      drawNormalLines = () => {
+
+        const normalColor = '#2E86AB'
+
+        this.normalLines = [northBound, southBound].map( p => getPoly(p, normalColor, 1))
+
+        this.normalLines.forEach( nl => nl.setMap(map))
+      }
+
+      getGoogleLatLng = point => new google.maps.LatLng(point)
+
+      getDistance = zoom => {
+        switch (true) {
+          case zoom > 15:
+            return 0
+
+          case zoom === 15:
+            return 10
+
+          case zoom === 14:
+            return 15
+
+          case zoom === 13:
+            return 25
+
+          case zoom === 12:
+            return 50
+
+          default:
+            return 100
+        }
+      }
+
+      getOffsetPath = (path, zoom) => path.map( (p, i) => {
+
+        const spherical = google.maps.geometry.spherical
+
+        // if used for roads where people drove on the opposite side, the heading offset would need to be reversed
+        const heading = i < path.length - 1 ?
+          spherical.computeHeading(getGoogleLatLng(path[i]), getGoogleLatLng(path[i + 1])) + 90 :
+          spherical.computeHeading(getGoogleLatLng(path[i - 1]), getGoogleLatLng(path[i])) + 90
+
+        const distance = getDistance(zoom)
+
+        const latLng = spherical.computeOffset(getGoogleLatLng(p), distance, heading)
+
+        return {
+          lat: latLng.lat(),
+          lng: latLng.lng(),
+        }
+      })
+
+
+      drawOffsetLines = () => {
+
+        const zoom = this.map.getZoom()
+        console.log('zoom at drawOffsetLines:', zoom);
+
+        const offsetColor = '#CF1259'
+
+        this.offsetLines = [northBound, southBound].map( p => getPoly(getOffsetPath(p, zoom), offsetColor, 2))
+
+        this.offsetLines.forEach( ol => ol.setMap(map))
+      }
+
+      getPoly = (path, strokeColor, zIndex) => new google.maps.Polyline({
+        path,
+        geodesic: true,
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+        zIndex,
+        strokeColor,
+      })
+
+      clearNormalLines = () => {
+        if (this.normalLines.length > 0) {
+          this.normalLines.forEach( nl =>  nl.setMap(null) )
+          this.normalLines = []
+        }
+      }
+
+      clearOffsetLines = () => {
+        if (this.offsetLines.length > 0) {
+          this.offsetLines.forEach( ol =>  ol.setMap(null) )
+          this.offsetLines = []
+        }
+      }
+
+      clearMap = () => {
+        clearNormalLines()
+        clearOffsetLines()
+      }
+
+
+      initMap = () => {
+        const self = this
+        self.map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {
+            lat: 40.426286,
+            lng: -111.885711,
+          },
+        });
+
+        google.maps.event.addListener(self.map, 'zoom_changed', () => {
+          console.log('zoom:', self.map.getZoom())
+
+          if(this.offsetLines.length > 0) {
+            clearOffsetLines()
+            drawOffsetLines()
+          }
+        })
+      }
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAkUF0DFrn0kpLi73cWeUnQJR_QELCJh4&callback=initMap&libraries=geometry,drawing">
+    </script>
+  </body>
+</html>
